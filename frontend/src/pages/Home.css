@@ -1,0 +1,304 @@
+/* ── Home Page ── */
+
+.home-page {
+  min-height: 100vh;
+  background: #0d1117;
+  display: flex;
+  flex-direction: column;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grid background */
+.home-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(29, 158, 117, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29, 158, 117, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Top bar ── */
+.home-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 0.5px solid #21262d;
+  position: relative;
+  z-index: 1;
+}
+
+.home-logo {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+.home-logo .green  { color: #1D9E75; }
+.home-logo .dot    { color: #30363d; }
+.home-logo .gray   { color: #8b949e; }
+
+.home-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-nav {
+  padding: 7px 16px;
+  background: transparent;
+  color: #8b949e;
+  border: 0.5px solid #30363d;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, border-color 0.2s;
+}
+.btn-nav:hover {
+  color: #c9d1d9;
+  border-color: #8b949e;
+}
+
+.btn-nav-primary {
+  padding: 7px 16px;
+  background: transparent;
+  color: #1D9E75;
+  border: 0.5px solid #1D9E75;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.btn-nav-primary:hover {
+  background: rgba(29, 158, 117, 0.1);
+}
+
+/* ── Hero ── */
+.home-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Terminal prompt */
+.home-prompt {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.prompt-user { color: #1D9E75; font-weight: 500; }
+.prompt-sep  { color: #30363d; }
+.prompt-cmd  { color: #c9d1d9; }
+.prompt-cursor {
+  color: #1D9E75;
+  transition: opacity 0.1s;
+}
+
+/* Badge */
+.home-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #1D9E75;
+  border: 0.5px solid #1D9E75;
+  padding: 4px 12px;
+  border-radius: 99px;
+  margin-bottom: 24px;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+}
+.home-badge.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1D9E75;
+  display: inline-block;
+}
+
+/* Title */
+.home-title {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 500;
+  color: #e6edf3;
+  text-align: center;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+}
+.home-title.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.home-title .accent { color: #1D9E75; }
+
+/* Divider */
+.home-divider {
+  height: 2px;
+  background: #1D9E75;
+  margin: 16px 0;
+  width: 0;
+  transition: width 0.6s ease 0.35s;
+}
+.home-divider.revealed { width: 60px; }
+
+/* Subtitle */
+.home-subtitle {
+  font-size: 14px;
+  color: #8b949e;
+  text-align: center;
+  line-height: 1.8;
+  max-width: 420px;
+  margin-bottom: 32px;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.45s;
+}
+.home-subtitle.revealed { opacity: 1; }
+
+.home-subtitle code {
+  color: #1D9E75;
+  font-family: inherit;
+  background: rgba(29, 158, 117, 0.1);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* CTA buttons */
+.home-btn-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.55s;
+}
+.home-btn-row.revealed { opacity: 1; }
+
+.btn-primary {
+  padding: 11px 28px;
+  background: #1D9E75;
+  color: #04342C;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: #5DCAA5; }
+
+.btn-secondary {
+  padding: 11px 28px;
+  background: transparent;
+  color: #8b949e;
+  border: 0.5px solid #30363d;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-secondary:hover {
+  border-color: #1D9E75;
+  color: #c9d1d9;
+}
+
+/* Category chips */
+.home-chips {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 40px;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.65s;
+}
+.home-chips.revealed { opacity: 1; }
+
+.chip {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 0.5px solid;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+}
+.chip-sqli { color: #1D9E75; border-color: rgba(29, 158, 117, 0.35); }
+.chip-xss  { color: #378ADD; border-color: rgba(55, 138, 221, 0.35); }
+.chip-csrf { color: #D85A30; border-color: rgba(216, 90, 48, 0.35); }
+
+/* Stats */
+.home-stats {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+  justify-content: center;
+  border-top: 0.5px solid #21262d;
+  padding-top: 28px;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.75s;
+}
+.home-stats.revealed { opacity: 1; }
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.stat-item + .stat-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10%;
+  height: 80%;
+  width: 0.5px;
+  background: #21262d;
+}
+.stat-num {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1D9E75;
+}
+.stat-label {
+  font-size: 10px;
+  color: #8b949e;
+  letter-spacing: 0.08em;
+  margin-top: 3px;
+}
+
+/* ── Footer ── */
+.home-footer {
+  padding: 16px 32px;
+  border-top: 0.5px solid #21262d;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+.home-footer span {
+  font-size: 11px;
+  color: #30363d;
+  letter-spacing: 0.05em;
+}

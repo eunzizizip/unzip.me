@@ -1,0 +1,313 @@
+/* ========================= */
+/* 전체 레이아웃               */
+/* ========================= */
+.challenge-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Georgia', serif;
+  background: #f5f4ef;
+  color: #1a1a1a;
+}
+
+/* ========================= */
+/* 사이드바                   */
+/* ========================= */
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  border-right: 1px solid #ddd;
+  padding: 24px 16px;
+  overflow-y: auto;
+  background: #faf9f5;
+}
+
+.sidebar h2 {
+  font-size: 11px;
+  font-family: monospace;
+  letter-spacing: 0.15em;
+  color: #888;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* 카테고리 그룹 */
+.category-group {
+  margin-bottom: 20px;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.category-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.category-dot.sql   { background: #e74c3c; }
+.category-dot.xss   { background: #27ae60; }
+.category-dot.csrf  { background: #3498db; }
+.category-dot.other { background: #aaa; }
+
+.category-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 문제 아이템 */
+.problem-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  transition: background 0.15s;
+  border: 1px solid transparent;
+}
+
+.problem-item:hover {
+  background: #f0ece0;
+}
+
+.problem-item.active {
+  background: #ede9df;
+  color: #111;
+  font-weight: 500;
+  border-color: #ccc;
+}
+
+/* 사이드바 배지 묶음 */
+.problem-item-badges {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+/* 사이드바 포인트 */
+.badge-points {
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 700;
+  color: #b8860b;
+  background: #fdf6e3;
+  border: 1px solid #e8d88a;
+  border-radius: 8px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+/* ========================= */
+/* 난이도 배지                 */
+/* ========================= */
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.badge.easy   { color: #2d7a4f; background: #e6f4ec; }
+.badge.medium { color: #b85c00; background: #fdf0e0; }
+.badge.hard   { color: #c0392b; background: #fdecea; }
+
+/* ========================= */
+/* 콘텐츠 영역                 */
+/* ========================= */
+.content {
+  flex: 1;
+  padding: 36px 48px;
+  overflow-y: auto;
+  background: #f5f4ef;
+}
+
+/* 제목 */
+.content h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+
+/* 배지 행 */
+.badge-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.badge-category {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: #e8e4d9;
+  border-radius: 6px;
+  color: #555;
+  font-family: monospace;
+}
+
+.badge-diff {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+.badge-diff.easy   { color: #2d7a4f; background: #e6f4ec; }
+.badge-diff.medium { color: #b85c00; background: #fdf0e0; }
+.badge-diff.hard   { color: #c0392b; background: #fdecea; }
+
+/* 상세 페이지 포인트 배지 */
+.badge-points-main {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: monospace;
+  color: #b8860b;
+  background: #fdf6e3;
+  border: 1px solid #e8d88a;
+  border-radius: 10px;
+  padding: 4px 12px;
+}
+
+/* 섹션 */
+.section {
+  margin-bottom: 28px;
+}
+
+.section-label {
+  font-size: 10px;
+  font-family: monospace;
+  letter-spacing: 0.15em;
+  color: #999;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* 설명 박스 */
+.desc-box {
+  background: #eeeade;
+  border-radius: 10px;
+  padding: 20px 24px;
+}
+
+.desc-box p {
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 8px;
+  color: #2a2a2a;
+}
+
+.desc-box p:last-child {
+  margin-bottom: 0;
+}
+
+.desc-box code {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+/* 힌트 박스 */
+.hint-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #e0ddd5;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.hint-box:hover {
+  background: #fafaf7;
+}
+
+.hint-arrow {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* 구분선 */
+.divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 8px 0 28px;
+}
+
+/* FLAG 제출 */
+.flag-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.flag-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-family: monospace;
+  outline: none;
+}
+
+.flag-input:focus {
+  border-color: #aaa;
+}
+
+.submit-btn {
+  padding: 12px 20px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.submit-btn:hover {
+  background: #f0ece0;
+}
+
+.flag-message {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.flag-message.success { color: #2d7a4f; }
+.flag-message.error   { color: #c0392b; }
+
+/* iframe */
+.lab-iframe {
+  width: 100%;
+  height: 600px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-top: 8px;
+  background: #fff;
+}

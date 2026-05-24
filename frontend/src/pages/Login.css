@@ -1,0 +1,134 @@
+/* ── Login Page ── */
+
+.login-page {
+  min-height: 100vh;
+  background: #0d1117;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grid background (홈과 동일) */
+.login-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(29, 158, 117, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29, 158, 117, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Card ── */
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 340px;
+  border: 0.5px solid #21262d;
+  border-radius: 8px;
+  background: rgba(13, 17, 23, 0.85);
+  padding: 32px 28px;
+}
+
+/* Header */
+.login-logo {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+.login-logo .green { color: #1D9E75; }
+.login-logo .dot   { color: #30363d; }
+.login-logo .gray  { color: #8b949e; }
+
+.login-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #e6edf3;
+  margin: 0 0 4px;
+}
+.login-subtitle {
+  font-size: 11px;
+  color: #8b949e;
+  letter-spacing: 0.05em;
+}
+
+/* Divider */
+.login-divider {
+  height: 1px;
+  background: #21262d;
+  margin: 20px 0;
+}
+
+/* ── Form fields ── */
+.login-field {
+  margin-bottom: 14px;
+}
+
+.login-label {
+  display: block;
+  font-size: 11px;
+  color: #8b949e;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.login-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #010409;
+  border: 0.5px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.login-input:focus {
+  border-color: #1D9E75;
+}
+.login-input::placeholder {
+  color: #484f58;
+}
+
+/* ── Submit button ── */
+.login-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 11px;
+  background: #1D9E75;
+  color: #04342C;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  transition: background 0.2s;
+}
+.login-btn:hover {
+  background: #5DCAA5;
+}
+
+/* ── Footer ── */
+.login-footer {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 11px;
+  color: #30363d;
+  letter-spacing: 0.05em;
+}
+.login-footer a {
+  color: #1D9E75;
+  text-decoration: none;
+}
+.login-footer a:hover {
+  text-decoration: underline;
+}
