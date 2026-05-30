@@ -6,23 +6,14 @@ const axios = require("axios");
 
 const app = express();
 
-// =========================
-// ✅ 설정
-// =========================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const SECRET = "ctf_secret";
+const DVWA_BASE = "http://localhost:8080";
 
-// =========================
-// ✅ 난이도별 포인트
-// =========================
-const DIFFICULTY_POINTS = {
-  easy: 100,
-  medium: 200,
-  hard: 300,
-};
+const DIFFICULTY_POINTS = { easy: 100, medium: 200, hard: 300 };
 
 // =========================
 // ✅ DB 연결
@@ -35,11 +26,8 @@ const db = mysql.createConnection({
 });
 
 db.connect((err) => {
-  if (err) {
-    console.log("DB 연결 실패 ❌", err);
-  } else {
-    console.log("DB 연결 성공 🔥");
-  }
+  if (err) console.log("DB 연결 실패 ❌", err);
+  else console.log("DB 연결 성공 🔥");
 });
 
 // =========================
@@ -47,39 +35,26 @@ db.connect((err) => {
 // =========================
 const auth = (req, res, next) => {
   const token = req.headers["authorization"];
-
-  if (!token) {
-    return res.status(401).send({ message: "토큰 없음 ❌" });
-  }
-
+  if (!token) return res.status(401).send({ message: "토큰 없음 ❌" });
   try {
-    const decoded = jwt.verify(token, SECRET);
-    req.user = decoded;
+    req.user = jwt.verify(token, SECRET);
     next();
   } catch {
     return res.status(403).send({ message: "토큰 오류 ❌" });
   }
 };
 
-// =========================
-// ✅ 기본 테스트
-// =========================
-app.get("/", (req, res) => {
-  res.send("서버 실행 중 🔥");
-});
+app.get("/", (req, res) => res.send("서버 실행 중 🔥"));
 
 // =========================
 // ✅ 회원가입
 // =========================
 app.post("/signup", (req, res) => {
   const { name, username, password } = req.body;
-
   if (!name || !username || !password) {
     return res.status(400).send({ message: "모든 값을 입력해주세요." });
   }
-
   const sql = "INSERT INTO users (name, username, password) VALUES (?, ?, ?)";
-
   db.query(sql, [name, username, password], (err) => {
     if (err) {
       if (err.code === "ER_DUP_ENTRY") {
@@ -96,14 +71,9 @@ app.post("/signup", (req, res) => {
 // =========================
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
-
   const sql = "SELECT * FROM users WHERE username=? AND password=?";
-
   db.query(sql, [username, password], (err, result) => {
-    if (err) {
-      return res.status(500).send({ message: "로그인 오류 ❌" });
-    }
-
+    if (err) return res.status(500).send({ message: "로그인 오류 ❌" });
     if (result.length > 0) {
       const user = result[0];
       const token = jwt.sign(
@@ -113,7 +83,6 @@ app.post("/login", (req, res) => {
       );
       return res.send({ message: "로그인 성공 🔥", token });
     }
-
     return res.status(401).send({ message: "아이디 또는 비밀번호 틀림 ❌" });
   });
 });
@@ -123,7 +92,6 @@ app.post("/login", (req, res) => {
 // =========================
 app.get("/me", auth, (req, res) => {
   const sql = "SELECT id, name, username, score FROM users WHERE id = ?";
-
   db.query(sql, [req.user.id], (err, result) => {
     if (err) return res.status(500).send({ message: "조회 실패 ❌" });
     res.send(result[0]);
@@ -135,18 +103,15 @@ app.get("/me", auth, (req, res) => {
 // =========================
 app.get("/problems", auth, (req, res) => {
   const sql = `
-  SELECT p.id, p.title, p.category, p.difficulty, p.dvwa_path,
-         MAX(IF(s.id IS NOT NULL, 1, 0)) AS is_solved
-  FROM problems p
-  LEFT JOIN solved s ON p.id = s.problem_id AND s.user_id = ?
-  GROUP BY p.id
-  ORDER BY p.id
-`;
-
+    SELECT p.id, p.title, p.category, p.difficulty, p.dvwa_path,
+           MAX(IF(s.id IS NOT NULL, 1, 0)) AS is_solved
+    FROM problems p
+    LEFT JOIN solved s ON p.id = s.problem_id AND s.user_id = ?
+    GROUP BY p.id
+    ORDER BY p.id
+  `;
   db.query(sql, [req.user.id], (err, result) => {
-    if (err) {
-      return res.status(500).send({ message: "문제 불러오기 실패 ❌" });
-    }
+    if (err) return res.status(500).send({ message: "문제 불러오기 실패 ❌" });
     res.send(result);
   });
 });
@@ -155,13 +120,9 @@ app.get("/problems", auth, (req, res) => {
 // ✅ 문제 상세
 // =========================
 app.get("/problems/:id", auth, (req, res) => {
-  const { id } = req.params;
   const sql = "SELECT * FROM problems WHERE id=?";
-
-  db.query(sql, [id], (err, result) => {
-    if (err) {
-      return res.status(500).send({ message: "문제 조회 실패 ❌" });
-    }
+  db.query(sql, [req.params.id], (err, result) => {
+    if (err) return res.status(500).send({ message: "문제 조회 실패 ❌" });
     res.send(result[0]);
   });
 });
@@ -171,8 +132,6 @@ app.get("/problems/:id", auth, (req, res) => {
 // =========================
 app.post("/submit", auth, (req, res) => {
   const { problemId, flag } = req.body;
-
-  // 문제 조회
   db.query(
     "SELECT flag, difficulty FROM problems WHERE id = ?",
     [problemId],
@@ -184,12 +143,10 @@ app.post("/submit", auth, (req, res) => {
       const difficulty = (result[0].difficulty || "easy").toLowerCase();
       const earnedPoints = DIFFICULTY_POINTS[difficulty] ?? 100;
 
-      // FLAG 비교
       if (flag !== correctFlag) {
         return res.send({ success: false, message: "틀렸습니다 ❌" });
       }
 
-      // 이미 푼 문제 확인
       db.query(
         "SELECT id FROM solved WHERE user_id = ? AND problem_id = ?",
         [req.user.id, problemId],
@@ -198,28 +155,21 @@ app.post("/submit", auth, (req, res) => {
           if (already.length > 0) {
             return res.send({ success: false, message: "이미 푼 문제입니다 ✅" });
           }
-
-          // solved 기록
           db.query(
             "INSERT INTO solved (user_id, problem_id) VALUES (?, ?)",
             [req.user.id, problemId],
             (err) => {
               if (err) return res.status(500).send({ message: "서버 오류 ❌" });
-
-              // 점수 추가
               db.query(
                 "UPDATE users SET score = score + ? WHERE id = ?",
                 [earnedPoints, req.user.id],
                 (err) => {
                   if (err) return res.status(500).send({ message: "서버 오류 ❌" });
-
-                  // 최종 점수 조회
                   db.query(
                     "SELECT score FROM users WHERE id = ?",
                     [req.user.id],
                     (err, userResult) => {
                       if (err) return res.status(500).send({ message: "서버 오류 ❌" });
-
                       res.send({
                         success: true,
                         message: "정답입니다 🔥",
@@ -240,7 +190,7 @@ app.post("/submit", auth, (req, res) => {
 });
 
 // =========================
-// ✅ 스코어보드 (랭킹)
+// ✅ 스코어보드
 // =========================
 app.get("/scoreboard", auth, (req, res) => {
   const sql = `
@@ -253,7 +203,6 @@ app.get("/scoreboard", auth, (req, res) => {
     ORDER BY u.score DESC, last_solved_at ASC
     LIMIT 50
   `;
-
   db.query(sql, (err, result) => {
     if (err) return res.status(500).send({ message: "스코어보드 조회 실패 ❌" });
     res.send(result);
@@ -271,57 +220,52 @@ app.get("/solved", auth, (req, res) => {
     WHERE s.user_id = ?
     ORDER BY s.solved_at DESC
   `;
-
   db.query(sql, [req.user.id], (err, result) => {
     if (err) return res.status(500).send({ message: "조회 실패 ❌" });
     res.send(result);
   });
 });
 
-// =========================
-// ✅ DVWA 세션 저장소
-// =========================
+// ============================================================
+// ✅ DVWA 프록시 (경로 프리픽스 방식)  ──  여기가 핵심 변경 부분
+// ============================================================
+
 let dvwaSession = null;
 
-// =========================
-// ✅ DVWA 자동 로그인
-// =========================
+// --- 쿠키 문자열 ↔ 맵 유틸 ---
+function parseSetCookie(setCookie, base = {}) {
+  const map = { ...base };
+  (setCookie || []).forEach((c) => {
+    const [pair] = c.split(";");
+    const i = pair.indexOf("=");
+    if (i < 0) return;
+    map[pair.slice(0, i).trim()] = pair.slice(i + 1).trim();
+  });
+  return map;
+}
+function cookieMapToStr(map) {
+  return Object.entries(map).map(([k, v]) => `${k}=${v}`).join("; ");
+}
+
+// --- DVWA 자동 로그인 + 보안 레벨 low ---
 async function initDvwaSession() {
   try {
-    const getRes = await axios.get("http://localhost:8080/login.php", {
+    const getRes = await axios.get(`${DVWA_BASE}/login.php`, {
       validateStatus: () => true,
     });
-
-    const getCookies = getRes.headers["set-cookie"] || [];
-    const cookieMap = {};
-
-    getCookies.forEach((c) => {
-      const [pair] = c.split(";");
-      const eqIdx = pair.indexOf("=");
-      const key = pair.slice(0, eqIdx).trim();
-      const value = pair.slice(eqIdx + 1).trim();
-      cookieMap[key] = value;
-    });
-
-    const tempCookie = Object.entries(cookieMap)
-      .map(([k, v]) => `${k}=${v}`)
-      .join("; ");
+    let cookieMap = parseSetCookie(getRes.headers["set-cookie"]);
+    const tempCookie = cookieMapToStr(cookieMap);
 
     const tokenMatch = getRes.data.match(/name='user_token'\s+value='([^']+)'/);
-    if (!tokenMatch) {
-      console.log("user_token 없음 ❌");
-      return;
-    }
-
-    const userToken = tokenMatch[1];
+    if (!tokenMatch) return console.log("user_token 없음 ❌");
 
     const postRes = await axios.post(
-      "http://localhost:8080/login.php",
+      `${DVWA_BASE}/login.php`,
       new URLSearchParams({
         username: "admin",
         password: "password",
         Login: "Login",
-        user_token: userToken,
+        user_token: tokenMatch[1],
       }),
       {
         headers: {
@@ -329,41 +273,27 @@ async function initDvwaSession() {
           Cookie: tempCookie,
         },
         maxRedirects: 0,
-        validateStatus: (status) => status < 400,
+        validateStatus: (s) => s < 400,
       }
     );
 
-    const postCookies = postRes.headers["set-cookie"] || [];
-    const finalCookieMap = { ...cookieMap };
+    cookieMap = parseSetCookie(postRes.headers["set-cookie"], cookieMap);
+    cookieMap["security"] = "low";
+    dvwaSession = cookieMapToStr(cookieMap);
 
-    postCookies.forEach((c) => {
-      const [pair] = c.split(";");
-      const eqIdx = pair.indexOf("=");
-      const key = pair.slice(0, eqIdx).trim();
-      const value = pair.slice(eqIdx + 1).trim();
-      finalCookieMap[key] = value;
-    });
-
-    finalCookieMap["security"] = "low";
-
-    dvwaSession = Object.entries(finalCookieMap)
-      .map(([k, v]) => `${k}=${v}`)
-      .join("; ");
-
-    const secPage = await axios.get("http://localhost:8080/security.php", {
+    const secPage = await axios.get(`${DVWA_BASE}/security.php`, {
       headers: { Cookie: dvwaSession },
       responseType: "text",
       validateStatus: () => true,
     });
-
-    const secTokenMatch = secPage.data.match(/name='user_token'\s+value='([^']+)'/);
-    if (secTokenMatch) {
+    const secMatch = secPage.data.match(/name='user_token'\s+value='([^']+)'/);
+    if (secMatch) {
       await axios.post(
-        "http://localhost:8080/security.php",
+        `${DVWA_BASE}/security.php`,
         new URLSearchParams({
           seclev_submit: "Submit",
           security: "low",
-          user_token: secTokenMatch[1],
+          user_token: secMatch[1],
         }),
         {
           headers: {
@@ -374,242 +304,118 @@ async function initDvwaSession() {
           validateStatus: () => true,
         }
       );
-      console.log("보안 레벨 low 설정 완료 🔥");
     }
-
-    console.log("DVWA 자동 로그인 성공 🔥");
+    console.log("DVWA 자동 로그인 + 보안 low 완료 🔥");
   } catch (err) {
     console.log("DVWA 로그인 실패 ❌", err.message);
   }
 }
-
 initDvwaSession();
 
-// =========================
-// ✅ DVWA 정적 파일 프록시
-// =========================
-app.get(/^\/dvwa\/(.*)/, async (req, res) => {
-  const filePath = req.originalUrl;
+// --- 응답 쿠키로 세션 갱신 ---
+function refreshSession(response) {
+  const setCookie = response.headers["set-cookie"];
+  if (!setCookie) return;
+  const base = {};
+  (dvwaSession || "").split("; ").forEach((c) => {
+    const i = c.indexOf("=");
+    if (i > 0) base[c.slice(0, i)] = c.slice(i + 1);
+  });
+  dvwaSession = cookieMapToStr(parseSetCookie(setCookie, base));
+}
 
-  try {
-    const response = await axios.get(`http://localhost:8080${filePath}`, {
-      headers: { Cookie: dvwaSession },
-      responseType: "arraybuffer",
-      validateStatus: () => true,
-    });
-
-    const contentType = response.headers["content-type"] || "application/octet-stream";
-    res.setHeader("Content-Type", contentType);
-    res.send(response.data);
-  } catch (err) {
-    console.log("정적 파일 오류:", err.message);
-    res.status(500).send("정적 파일 프록시 오류: " + err.message);
-  }
-});
-
-// =========================
-// ✅ 경로 정규화 함수
-// =========================
-function resolvePath(base, rel) {
-  if (rel.startsWith("http") || rel.startsWith("//") || rel.startsWith("#")) {
-    return null;
-  }
-  let absolute;
-  if (rel.startsWith("/")) {
-    absolute = rel;
-  } else {
-    const baseParts = base.split("/").slice(0, -1);
-    const relParts = rel.split("/");
-    for (const part of relParts) {
-      if (part === "..") baseParts.pop();
-      else if (part !== ".") baseParts.push(part);
+// --- HTML 내 절대경로만 /dvwa 프리픽스 붙이기 (상대경로는 그대로 둠) ---
+function rewriteHtml(html) {
+  return html.replace(
+    /(href|src|action)=("|')(\/[^"']*)\2/g,
+    (m, attr, q, p) => {
+      if (p.startsWith("//")) return m;        // 프로토콜 상대경로
+      if (p.startsWith("/dvwa/")) return m;     // 이미 처리됨
+      return `${attr}=${q}/dvwa${p}${q}`;
     }
-    absolute = baseParts.join("/") || "/";
-  }
-  return absolute;
+  );
 }
 
-// =========================
-// ✅ HTML rewrite 함수
-// =========================
-function sendProxiedHtml(res, response, currentPath) {
-  const contentType = response.headers["content-type"] || "text/html";
-  res.setHeader("Content-Type", contentType);
+// --- /dvwa, /dvwa/* 전부 처리 ---
+app.all(/^\/dvwa(\/.*)?$/, async (req, res) => {
+  if (!dvwaSession) await initDvwaSession();
 
-  let html = response.data;
-
-  if (typeof html === "string") {
-    const basePath = currentPath.split("?")[0];
-
-    html = html
-      .replace(/action="([^"]+)"/g, (_, p) => {
-        if (p.startsWith("http") || p.startsWith("//")) return `action="${p}"`;
-        if (p.startsWith("?")) {
-          return `action="/dvwa-proxy?path=${encodeURIComponent(basePath + p)}"`;
-        }
-        const resolved = resolvePath(currentPath, p);
-        if (!resolved) return `action="${p}"`;
-        return `action="/dvwa-proxy?path=${encodeURIComponent(resolved)}"`;
-      })
-      .replace(/href="([^"]+)"/g, (_, p) => {
-        if (p.startsWith("http") || p.startsWith("//") || p.startsWith("#")) return `href="${p}"`;
-        if (p.startsWith("?")) {
-          return `href="/dvwa-proxy?path=${encodeURIComponent(basePath + p)}"`;
-        }
-        const resolved = resolvePath(currentPath, p);
-        if (!resolved) return `href="${p}"`;
-        return `href="/dvwa-proxy?path=${encodeURIComponent(resolved)}"`;
-      })
-      .replace(/src="([^"]+)"/g, (_, p) => {
-        if (p.startsWith("http") || p.startsWith("//")) return `src="${p}"`;
-        if (p.startsWith("?")) {
-          return `src="/dvwa-proxy?path=${encodeURIComponent(basePath + p)}"`;
-        }
-        const resolved = resolvePath(currentPath, p);
-        if (!resolved) return `src="${p}"`;
-        return `src="/dvwa-proxy?path=${encodeURIComponent(resolved)}"`;
-      });
-  }
-
-  res.send(html);
-}
-
-// =========================
-// ✅ DVWA 프록시 ALL
-// =========================
-app.all("/dvwa-proxy", async (req, res) => {
-  const path = req.query.path || "/";
-
-  if (!dvwaSession) {
-    await initDvwaSession();
-  }
+  // /dvwa 프리픽스 제거 → 실제 DVWA 경로 (쿼리스트링 포함)
+  const dvwaPath = req.originalUrl.replace(/^\/dvwa/, "") || "/";
+  const target = `${DVWA_BASE}${dvwaPath}`;
 
   try {
-    const fixedPath = path.startsWith("/") ? path : `/${path}`;
-
     let response;
 
-    if (req.method === "GET") {
-      response = await axios.get(`http://localhost:8080${fixedPath}`, {
-        headers: {
-          Cookie: dvwaSession,
-          Referer: `http://localhost:8080${fixedPath}`,
-          Origin: "http://localhost:8080",
-        },
-        responseType: "text",
-        maxRedirects: 0,
-        validateStatus: () => true,
-      });
-
-      const newCookies = response.headers["set-cookie"];
-      if (newCookies) {
-        const cookieMap = {};
-        if (dvwaSession) {
-          dvwaSession.split("; ").forEach((c) => {
-            const idx = c.indexOf("=");
-            const k = c.slice(0, idx);
-            const v = c.slice(idx + 1);
-            cookieMap[k] = v;
-          });
-        }
-        newCookies.forEach((c) => {
-          const [pair] = c.split(";");
-          const idx = pair.indexOf("=");
-          const k = pair.slice(0, idx).trim();
-          const v = pair.slice(idx + 1).trim();
-          cookieMap[k] = v;
-        });
-        dvwaSession = Object.entries(cookieMap)
-          .map(([k, v]) => `${k}=${v}`)
-          .join("; ");
-        console.log("GET 세션 갱신 완료 🔥");
-      }
-    } else if (req.method === "POST") {
-      const tokenPage = await axios.get(`http://localhost:8080${fixedPath}`, {
+    if (req.method === "POST") {
+      // 폼의 user_token이 만료됐을 수 있으니 신선한 토큰으로 교체
+      const tokenPage = await axios.get(target, {
         headers: { Cookie: dvwaSession },
         responseType: "text",
         validateStatus: () => true,
       });
+      const tm = tokenPage.data.match(/name='user_token'\s+value='([^']+)'/);
+      if (tm) req.body.user_token = tm[1];
 
-      const tokenMatch = tokenPage.data.match(/name='user_token'\s+value='([^']+)'/);
-      if (tokenMatch) {
-        req.body.user_token = tokenMatch[1];
-        console.log("새 user_token:", tokenMatch[1]);
-      }
-
-      response = await axios.post(
-        `http://localhost:8080${fixedPath}`,
-        new URLSearchParams(req.body),
-        {
-          headers: {
-            Cookie: dvwaSession,
-            Referer: `http://localhost:8080${fixedPath}`,
-            Origin: "http://localhost:8080",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          responseType: "text",
-          maxRedirects: 0,
-          validateStatus: () => true,
-        }
-      );
-
-      const newCookies = response.headers["set-cookie"];
-      if (newCookies) {
-        const cookieMap = {};
-        if (dvwaSession) {
-          dvwaSession.split("; ").forEach((c) => {
-            const idx = c.indexOf("=");
-            const k = c.slice(0, idx);
-            const v = c.slice(idx + 1);
-            cookieMap[k] = v;
-          });
-        }
-        newCookies.forEach((c) => {
-          const [pair] = c.split(";");
-          const idx = pair.indexOf("=");
-          const k = pair.slice(0, idx).trim();
-          const v = pair.slice(idx + 1).trim();
-          cookieMap[k] = v;
-        });
-        dvwaSession = Object.entries(cookieMap)
-          .map(([k, v]) => `${k}=${v}`)
-          .join("; ");
-        console.log("POST 세션 갱신 완료 🔥");
-      }
+      response = await axios.post(target, new URLSearchParams(req.body), {
+        headers: {
+          Cookie: dvwaSession,
+          Referer: target,
+          Origin: DVWA_BASE,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        responseType: "arraybuffer",
+        maxRedirects: 0,
+        validateStatus: () => true,
+      });
+    } else {
+      response = await axios.get(target, {
+        headers: { Cookie: dvwaSession, Referer: target, Origin: DVWA_BASE },
+        responseType: "arraybuffer",
+        maxRedirects: 0,
+        validateStatus: () => true,
+      });
     }
 
-    if (
-      response.status >= 300 &&
-      response.status < 400 &&
-      response.headers.location
-    ) {
+    refreshSession(response);
+
+    // 리다이렉트 처리
+    if (response.status >= 300 && response.status < 400 && response.headers.location) {
       const loc = response.headers.location;
 
-      if (loc === "/index.php" || loc === "/" || loc.includes("login.php")) {
+      // 로그인 페이지로 튕기면 세션 만료 → 재로그인 후 원래 경로로
+      if (loc.includes("login.php") || loc === "/index.php" || loc === "/") {
         console.log("세션 만료 감지 → 재초기화 🔄");
         await initDvwaSession();
-        return res.redirect(`/dvwa-proxy?path=${encodeURIComponent(fixedPath)}`);
+        return res.redirect(`/dvwa${dvwaPath}`);
       }
 
-      let resolvedLoc;
+      let resolved;
       if (loc.startsWith("http")) {
-        const url = new URL(loc);
-        resolvedLoc = url.pathname + url.search;
+        const u = new URL(loc);
+        resolved = u.pathname + u.search;
       } else if (loc.startsWith("/")) {
-        resolvedLoc = loc;
+        resolved = loc;
       } else if (loc.startsWith("?")) {
-        resolvedLoc = fixedPath.split("?")[0] + loc;
+        resolved = dvwaPath.split("?")[0] + loc;
       } else {
-        const base = fixedPath.substring(0, fixedPath.lastIndexOf("/") + 1);
-        resolvedLoc = base + loc;
+        const base = dvwaPath.split("?")[0];
+        resolved = base.substring(0, base.lastIndexOf("/") + 1) + loc;
       }
-
-      console.log("리다이렉트:", loc, "→", resolvedLoc);
-      return res.redirect(`/dvwa-proxy?path=${encodeURIComponent(resolvedLoc)}`);
+      return res.redirect(`/dvwa${resolved}`);
     }
 
-    sendProxiedHtml(res, response, fixedPath);
+    // 콘텐츠 타입에 따라 분기
+    const contentType = response.headers["content-type"] || "application/octet-stream";
+    res.setHeader("Content-Type", contentType);
 
+    if (contentType.includes("text/html")) {
+      const html = Buffer.from(response.data).toString("utf8");
+      res.send(rewriteHtml(html));
+    } else {
+      // CSS / JS / 이미지 등은 그대로 전달
+      res.send(Buffer.from(response.data));
+    }
   } catch (err) {
     console.log("프록시 오류:", err.message);
     res.status(500).send("DVWA 프록시 오류: " + err.message);
@@ -621,8 +427,4 @@ app.all("/dvwa-proxy", async (req, res) => {
 // =========================
 app.listen(3000, () => {
   console.log("서버 실행 중: http://localhost:3000");
-  console.log("📋 추가된 API:");
-  console.log("  GET  /me           - 내 정보 + 점수");
-  console.log("  GET  /scoreboard   - 랭킹");
-  console.log("  GET  /solved       - 내가 푼 문제");
 });

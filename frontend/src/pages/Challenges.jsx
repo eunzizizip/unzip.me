@@ -25,6 +25,9 @@ export default function Challenges() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [openHints, setOpenHints] = useState({});
+  const [solvedIds, setSolvedIds] = useState([]);
+  const [totalScore, setTotalScore] = useState(0);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -35,27 +38,26 @@ export default function Challenges() {
       })
       .then((res) => {
         setProblems(res.data);
-        if (res.data.length > 0) {
-          const firstId = res.data[0].id;
-          axios
-            .get(`http://localhost:3000/problems/${firstId}`, {
-              headers: { authorization: token },
-            })
-            .then((r) => {
-              setSelected(r.data);
-              setFlagInput("");
-              setMessage("");
-              setOpenHints({});
-            })
-            .catch(console.error);
-        }
+        const solved = res.data
+          .filter((p) => p.is_solved === 1)
+          .map((p) => p.id);
+        setSolvedIds(solved);
+      })
+      .catch(console.error);
+
+    axios
+      .get("http://localhost:3000/me", {
+        headers: { authorization: token },
+      })
+      .then((res) => {
+        setTotalScore(res.data.score || 0);
+        setUserName(res.data.name || "");
       })
       .catch(console.error);
   }, []);
 
   const selectProblemById = (id) => {
     const token = sessionStorage.getItem("token");
-
     axios
       .get(`http://localhost:3000/problems/${id}`, {
         headers: { authorization: token },
@@ -71,9 +73,7 @@ export default function Challenges() {
 
   const submitFlag = () => {
     if (!selected) return;
-
     const token = sessionStorage.getItem("token");
-
     axios
       .post(
         "http://localhost:3000/submit",
@@ -85,6 +85,8 @@ export default function Challenges() {
           setMessage(
             `정답입니다 🔥  +${res.data.points}pt 획득!  (누적 점수: ${res.data.total_score}pt)`
           );
+          setSolvedIds((prev) => [...prev, selected.id]);
+          setTotalScore(res.data.total_score);
         } else {
           setMessage(res.data.message);
         }
@@ -116,7 +118,27 @@ export default function Challenges() {
   return (
     <div className="challenge-container">
       <aside className="sidebar">
-        <h2>CHALLENGES</h2>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <span className="green">unzip</span>
+            <span className="dot">.</span>
+            <span className="gray">me</span>
+          </div>
+          <div className="sidebar-score">
+            <span className="score-label">SCORE</span>
+            <span className="score-num">{totalScore}pt</span>
+          </div>
+        </div>
+
+        {userName && (
+          <div className="sidebar-user">
+            <span className="prompt-sym">$</span> {userName}
+          </div>
+        )}
+
+        <div className="sidebar-divider" />
+
+        <div className="sidebar-title">CHALLENGES</div>
 
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category} className="category-group">
@@ -127,15 +149,20 @@ export default function Challenges() {
 
             {items.map((item) => {
               const isActive = selected && selected.id === item.id;
+              const isSolved = solvedIds.includes(item.id);
 
               return (
                 <div
                   key={item.id}
-                  className={`problem-item ${isActive ? "active" : ""}`}
+                  className={`problem-item ${isActive ? "active" : ""} ${isSolved ? "solved" : ""}`}
                   onClick={() => selectProblemById(item.id)}
                 >
-                  <span>{item.title}</span>
-
+                  <div className="problem-item-left">
+                    <span className="solved-indicator">
+                      {isSolved ? "✓" : "○"}
+                    </span>
+                    <span>{item.title}</span>
+                  </div>
                   <div className="problem-item-badges">
                     {item.difficulty && (
                       <span className={`badge ${diffClass(item.difficulty)}`}>
@@ -170,6 +197,9 @@ export default function Challenges() {
               <span className="badge-points-main">
                 🏆 {getPoints(selected.difficulty)}pt
               </span>
+              {solvedIds.includes(selected.id) && (
+                <span className="badge-solved">SOLVED</span>
+              )}
             </div>
 
             <div className="section">
@@ -223,7 +253,7 @@ export default function Challenges() {
               <div className="section">
                 <div className="section-label">LAB</div>
                 <iframe
-                  src={`http://localhost:3000/dvwa-proxy?path=${encodeURIComponent(selected.dvwa_path)}`}
+                  src={`http://localhost:3000/dvwa/${selected.dvwa_path.replace(/^\//, "")}`}
                   title="DVWA"
                   className="lab-iframe"
                 />
@@ -231,7 +261,15 @@ export default function Challenges() {
             )}
           </>
         ) : (
-          <p>문제를 선택하세요.</p>
+          <div className="empty-state">
+            <div className="empty-prompt">
+              <span className="green">root@unzip</span>
+              <span className="gray">:~$</span>
+              <span className="cursor">█</span>
+            </div>
+            <p className="empty-title">문제를 선택하세요</p>
+            <p className="empty-sub">사이드바에서 도전할 문제를 골라보세요.</p>
+          </div>
         )}
       </main>
     </div>

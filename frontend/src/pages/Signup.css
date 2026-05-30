@@ -1,8 +1,6 @@
-/* ── Signup Page ── */
-
 .signup-page {
   min-height: 100vh;
-  background: #0d1117;
+  background: #1e2430;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,8 +13,8 @@
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(29, 158, 117, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(29, 158, 117, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(29, 158, 117, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29, 158, 117, 0.1) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
@@ -26,9 +24,9 @@
   position: relative;
   z-index: 1;
   width: 340px;
-  border: 0.5px solid #21262d;
+  border: 0.5px solid #3d4659;
   border-radius: 8px;
-  background: rgba(13, 17, 23, 0.85);
+  background: #161c28;
   padding: 32px 28px;
 }
 
@@ -39,35 +37,33 @@
   margin-bottom: 16px;
 }
 .signup-logo .green { color: #1D9E75; }
-.signup-logo .dot   { color: #30363d; }
-.signup-logo .gray  { color: #8b949e; }
+.signup-logo .dot   { color: #5a6680; }
+.signup-logo .gray  { color: #c5cede; }
 
 .signup-title {
   font-size: 18px;
   font-weight: 500;
-  color: #e6edf3;
+  color: #f0f4ff;
   margin: 0 0 4px;
 }
 .signup-subtitle {
   font-size: 11px;
-  color: #8b949e;
+  color: #c5cede;
   letter-spacing: 0.05em;
 }
 
 .signup-divider {
   height: 1px;
-  background: #21262d;
+  background: #3d4659;
   margin: 20px 0;
 }
 
-.signup-field {
-  margin-bottom: 14px;
-}
+.signup-field { margin-bottom: 14px; }
 
 .signup-label {
   display: block;
   font-size: 11px;
-  color: #8b949e;
+  color: #c5cede;
   letter-spacing: 0.08em;
   margin-bottom: 6px;
 }
@@ -75,31 +71,21 @@
 .signup-input {
   width: 100%;
   box-sizing: border-box;
-  background: #010409;
-  border: 0.5px solid #30363d;
+  background: #1e2430;
+  border: 0.5px solid #5a6680;
   border-radius: 6px;
-  color: #c9d1d9;
+  color: #f0f4ff;
   font-family: inherit;
   font-size: 13px;
   padding: 9px 12px;
   outline: none;
   transition: border-color 0.2s;
 }
-.signup-input:focus {
-  border-color: #1D9E75;
-}
-.signup-input::placeholder {
-  color: #484f58;
-}
+.signup-input:focus { border-color: #1D9E75; }
+.signup-input::placeholder { color: #7a8499; }
 
-/* 아이디 + 중복확인 버튼 row */
-.signup-row {
-  display: flex;
-  gap: 8px;
-}
-.signup-row .signup-input {
-  flex: 1;
-}
+.signup-row { display: flex; gap: 8px; }
+.signup-row .signup-input { flex: 1; }
 
 .btn-check {
   padding: 9px 12px;
@@ -113,9 +99,7 @@
   white-space: nowrap;
   transition: background 0.2s;
 }
-.btn-check:hover {
-  background: rgba(29, 158, 117, 0.1);
-}
+.btn-check:hover { background: rgba(29, 158, 117, 0.12); }
 
 .signup-msg {
   font-size: 11px;
@@ -123,7 +107,7 @@
   letter-spacing: 0.03em;
 }
 .signup-msg.success { color: #1D9E75; }
-.signup-msg.error   { color: #D85A30; }
+.signup-msg.error   { color: #e8845b; }
 
 .signup-btn {
   width: 100%;
@@ -140,21 +124,14 @@
   letter-spacing: 0.03em;
   transition: background 0.2s;
 }
-.signup-btn:hover {
-  background: #5DCAA5;
-}
+.signup-btn:hover { background: #5DCAA5; }
 
 .signup-footer {
   margin-top: 16px;
   text-align: center;
   font-size: 11px;
-  color: #30363d;
+  color: #7a8499;
   letter-spacing: 0.05em;
 }
-.signup-footer a {
-  color: #1D9E75;
-  text-decoration: none;
-}
-.signup-footer a:hover {
-  text-decoration: underline;
-}
+.signup-footer a { color: #1D9E75; text-decoration: none; }
+.signup-footer a:hover { text-decoration: underline; }

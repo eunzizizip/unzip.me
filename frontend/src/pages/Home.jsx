@@ -120,7 +120,7 @@ export default function Home() {
 
         <div className={`home-stats ${revealed ? "revealed" : ""}`}>
           <div className="stat-item">
-            <div className="stat-num">12</div>
+            <div className="stat-num">9</div>
             <div className="stat-label">CHALLENGES</div>
           </div>
           <div className="stat-item">
