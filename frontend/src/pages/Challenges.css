@@ -7,10 +7,10 @@
 }
 
 .sidebar {
-  width: 360px;           /* 280px → 360px */
+  width: 360px;
   flex-shrink: 0;
   border-right: 0.5px solid #3d4659;
-  padding: 24px 20px;    /* 20/16 → 24/20 */
+  padding: 24px 20px;
   overflow-y: auto;
   background: #161c28;
   display: flex;
@@ -25,7 +25,7 @@
 }
 
 .sidebar-logo {
-  font-size: 17px;        /* 14px → 17px */
+  font-size: 17px;
   font-weight: 500;
   letter-spacing: 0.05em;
 }
@@ -39,18 +39,18 @@
   align-items: flex-end;
 }
 .score-label {
-  font-size: 11px;        /* 9px → 11px */
+  font-size: 11px;
   color: #d4dbe8;
   letter-spacing: 0.1em;
 }
 .score-num {
-  font-size: 17px;        /* 14px → 17px */
+  font-size: 17px;
   font-weight: 500;
   color: #1D9E75;
 }
 
 .sidebar-user {
-  font-size: 14px;        /* 12px → 14px */
+  font-size: 14px;
   color: #d4dbe8;
   margin-bottom: 14px;
 }
@@ -63,7 +63,7 @@
 }
 
 .sidebar-title {
-  font-size: 12px;        /* 10px → 12px */
+  font-size: 12px;
   color: #9aa3b5;
   letter-spacing: 0.15em;
   margin-bottom: 16px;
@@ -79,7 +79,7 @@
 }
 
 .category-dot {
-  width: 8px;             /* 7px → 8px */
+  width: 8px;
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
@@ -90,7 +90,7 @@
 .category-dot.other { background: #9aa3b5; }
 
 .category-name {
-  font-size: 13px;        /* 11px → 13px */
+  font-size: 13px;
   font-weight: 500;
   color: #d4dbe8;
   letter-spacing: 0.05em;
@@ -100,10 +100,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 9px 12px;      /* 7/10 → 9/12 */
+  padding: 9px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;        /* 12px → 14px */
+  font-size: 14px;
   color: #d4dbe8;
   transition: background 0.15s;
   border: 0.5px solid transparent;
@@ -127,7 +127,7 @@
 }
 
 .solved-indicator {
-  font-size: 13px;        /* 11px → 13px */
+  font-size: 13px;
   color: #1D9E75;
   width: 14px;
   flex-shrink: 0;
@@ -142,14 +142,14 @@
 }
 
 .badge-points {
-  font-size: 12px;        /* 10px → 12px */
+  font-size: 12px;
   font-weight: 500;
   color: #d4dbe8;
   white-space: nowrap;
 }
 
 .badge {
-  font-size: 11px;        /* 10px → 11px */
+  font-size: 11px;
   font-weight: 500;
   padding: 2px 8px;
   border-radius: 99px;
@@ -164,16 +164,22 @@
 
 .content {
   flex: 1;
-  padding: 40px 56px;    /* 36/48 → 40/56 */
-  overflow-y: auto;
+  min-width: 0;
+  padding: 32px 40px 0;
   background: #1e2430;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+/* 헤더(제목·배지·탭)는 고정, 아래 작업영역만 스크롤 */
+.content-header { flex-shrink: 0; }
+
 .content h1 {
-  font-size: 28px;        /* 24px → 28px */
+  font-size: 28px;
   font-weight: 500;
   color: #f0f4ff;
-  margin: 0 0 18px;
+  margin: 0 0 16px;
   letter-spacing: -0.02em;
 }
 
@@ -181,12 +187,12 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
 .badge-category {
-  font-size: 13px;        /* 11px → 13px */
+  font-size: 13px;
   padding: 4px 12px;
   background: rgba(29,158,117,0.12);
   border: 0.5px solid rgba(29,158,117,0.4);
@@ -195,7 +201,7 @@
 }
 
 .badge-diff {
-  font-size: 13px;        /* 11px → 13px */
+  font-size: 13px;
   font-weight: 500;
   padding: 4px 12px;
   border-radius: 99px;
@@ -206,13 +212,13 @@
 .badge-diff.hard   { color: #e8845b; border-color: rgba(232,132,91,0.45); }
 
 .badge-points-main {
-  font-size: 13px;        /* 11px → 13px */
+  font-size: 13px;
   font-weight: 500;
   color: #d4dbe8;
 }
 
 .badge-solved {
-  font-size: 12px;        /* 10px → 12px */
+  font-size: 12px;
   font-weight: 500;
   padding: 4px 12px;
   border-radius: 99px;
@@ -222,10 +228,66 @@
   letter-spacing: 0.05em;
 }
 
-.section { margin-bottom: 32px; }
+/* ── 탭 ── */
+.tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 0.5px solid #3d4659;
+}
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #9aa3b5;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 14px;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -0.5px;
+}
+.tab:hover { color: #d4dbe8; }
+.tab.active { color: #f0f4ff; border-bottom-color: #1D9E75; }
+.tab .lock { font-size: 11px; margin-left: 5px; }
+
+/* ── 좌우 2단 작업영역 ── */
+.work-area {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 28px;
+  padding: 24px 0 32px;
+}
+
+.read-pane {
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.lab-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 16px;
+}
+
+.lab-frame-wrap {
+  flex: 1;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-area { flex-shrink: 0; }
+
+.section { margin-bottom: 28px; }
+.section:last-child { margin-bottom: 0; }
 
 .section-label {
-  font-size: 12px;        /* 10px → 12px */
+  font-size: 12px;
   letter-spacing: 0.15em;
   color: #9aa3b5;
   margin-bottom: 12px;
@@ -236,10 +298,10 @@
   background: #161c28;
   border: 0.5px solid #3d4659;
   border-radius: 6px;
-  padding: 24px 28px;    /* 20/24 → 24/28 */
+  padding: 24px 28px;
 }
 .desc-box p {
-  font-size: 15px;        /* 13px → 15px */
+  font-size: 15px;
   line-height: 1.9;
   margin-bottom: 10px;
   color: #d4dbe8;
@@ -250,7 +312,7 @@
   border: 0.5px solid rgba(29,158,117,0.3);
   border-radius: 4px;
   padding: 2px 7px;
-  font-size: 14px;        /* 12px → 14px */
+  font-size: 14px;
   color: #1D9E75;
   font-family: inherit;
 }
@@ -262,10 +324,10 @@
   background: #161c28;
   border: 0.5px solid #3d4659;
   border-radius: 6px;
-  padding: 14px 18px;    /* 12/16 → 14/18 */
+  padding: 14px 18px;
   margin-bottom: 8px;
   cursor: pointer;
-  font-size: 14px;        /* 12px → 14px */
+  font-size: 14px;
   color: #d4dbe8;
   transition: border-color 0.15s, color 0.15s;
   user-select: none;
@@ -275,18 +337,109 @@
   color: #f0f4ff;
 }
 .hint-arrow {
-  font-size: 11px;        /* 10px → 11px */
+  font-size: 11px;
   color: #1D9E75;
   margin-top: 2px;
   flex-shrink: 0;
 }
 
-.divider {
-  border: none;
-  border-top: 0.5px solid #3d4659;
-  margin: 8px 0 32px;
+/* ── 학습 콘텐츠 (이론/공격/방어) ── */
+.ct-summary {
+  background: rgba(29,158,117,0.08);
+  border-left: 2px solid #1D9E75;
+  border-radius: 0 6px 6px 0;
+  padding: 16px 20px;
+  font-size: 15px;
+  line-height: 1.85;
+  color: #d4dbe8;
+  margin-bottom: 24px;
+}
+.ct-h {
+  font-size: 16px;
+  font-weight: 500;
+  color: #f0f4ff;
+  margin: 24px 0 10px;
+  letter-spacing: 0.01em;
+}
+.ct-h:first-child { margin-top: 0; }
+.ct-p {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #d4dbe8;
+  margin: 0 0 12px;
+}
+.ct-list {
+  margin: 0 0 14px;
+  padding-left: 20px;
+}
+.ct-list li {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #d4dbe8;
+  margin-bottom: 6px;
+}
+.ct-code {
+  background: #12161f;
+  border: 0.5px solid #3d4659;
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 0 0 16px;
+  overflow-x: auto;
+}
+.ct-code code {
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #7fd6b3;
+  white-space: pre;
 }
 
+.no-content {
+  font-size: 14px;
+  color: #9aa3b5;
+  padding: 24px 0;
+}
+
+/* ── 공격 풀이 스포일러 게이트 ── */
+.spoiler-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  background: #161c28;
+  border: 0.5px solid #3d4659;
+  border-radius: 8px;
+  padding: 40px 28px;
+}
+.spoiler-icon { font-size: 26px; }
+.spoiler-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #f0f4ff;
+  margin: 4px 0 0;
+}
+.spoiler-sub {
+  font-size: 14px;
+  color: #9aa3b5;
+  margin: 0 0 8px;
+  line-height: 1.7;
+}
+.spoiler-btn {
+  padding: 10px 22px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 0.5px solid #1D9E75;
+  background: transparent;
+  color: #1D9E75;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.spoiler-btn:hover { background: rgba(29,158,117,0.12); }
+
+/* ── 플래그 제출 ── */
 .flag-row {
   display: flex;
   gap: 8px;
@@ -295,8 +448,9 @@
 
 .flag-input {
   flex: 1;
-  padding: 12px 16px;    /* 10/14 → 12/16 */
-  font-size: 15px;        /* 13px → 15px */
+  min-width: 0;
+  padding: 12px 16px;
+  font-size: 15px;
   border-radius: 6px;
   border: 0.5px solid #5a6680;
   background: #161c28;
@@ -309,8 +463,8 @@
 .flag-input::placeholder { color: #9aa3b5; }
 
 .submit-btn {
-  padding: 12px 24px;    /* 10/20 → 12/24 */
-  font-size: 14px;        /* 12px → 14px */
+  padding: 12px 24px;
+  font-size: 14px;
   border-radius: 6px;
   border: 0.5px solid #1D9E75;
   background: transparent;
@@ -319,32 +473,46 @@
   font-family: inherit;
   font-weight: 500;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 .submit-btn:hover { background: rgba(29,158,117,0.12); }
 
 .flag-message {
   margin-top: 12px;
-  font-size: 14px;        /* 12px → 14px */
+  font-size: 14px;
   font-weight: 500;
 }
 .flag-message.success { color: #1D9E75; }
 .flag-message.error   { color: #e8845b; }
 
+/* ── DVWA 실습 프레임 ── */
 .lab-iframe {
   width: 100%;
-  height: 600px;
+  flex: 1;
+  min-height: 0;
   border: 0.5px solid #3d4659;
   border-radius: 6px;
-  margin-top: 8px;
   background: #161c28;
 }
 
+.lab-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px dashed #3d4659;
+  border-radius: 6px;
+  color: #9aa3b5;
+  font-size: 14px;
+}
+
+/* ── 빈 상태 ── */
 .empty-state {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   gap: 12px;
 }
 
@@ -352,7 +520,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 15px;        /* 13px → 15px */
+  font-size: 15px;
 }
 .empty-prompt .green  { color: #1D9E75; }
 .empty-prompt .gray   { color: #5a6680; }
@@ -367,13 +535,27 @@
 }
 
 .empty-title {
-  font-size: 18px;        /* 16px → 18px */
+  font-size: 18px;
   font-weight: 500;
   color: #d4dbe8;
   margin: 0;
 }
 .empty-sub {
-  font-size: 14px;        /* 12px → 14px */
+  font-size: 14px;
   color: #9aa3b5;
   margin: 0;
+}
+
+/* ── 좁은 화면: 2단 → 1단 ── */
+@media (max-width: 1100px) {
+  .content { overflow-y: auto; padding-bottom: 32px; }
+  .work-area {
+    display: block;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+  .read-pane { overflow: visible; padding-right: 0; margin-bottom: 28px; }
+  .lab-pane { min-height: 0; }
+  .lab-frame-wrap { min-height: 0; }
+  .lab-iframe { height: 520px; flex: none; }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Challenges.css";
+import { getChallengeContent } from "./challengeContent";
 
 const categoryDotClass = {
   "SQL Injection": "sql",
@@ -18,6 +19,34 @@ const getPoints = (difficulty) => {
   return map[difficulty?.toLowerCase()] ?? 100;
 };
 
+const TABS = [
+  { key: "description", label: "문제 설명" },
+  { key: "theory", label: "이론" },
+  { key: "attack", label: "공격 풀이" },
+  { key: "defense", label: "방어 코드" },
+];
+
+// 콘텐츠 블록 렌더러
+const renderBlocks = (blocks = []) =>
+  blocks.map((b, i) => {
+    if (b.type === "h") return <h3 key={i} className="ct-h">{b.text}</h3>;
+    if (b.type === "code")
+      return (
+        <pre key={i} className="ct-code">
+          <code>{b.text}</code>
+        </pre>
+      );
+    if (b.type === "list")
+      return (
+        <ul key={i} className="ct-list">
+          {b.items.map((it, j) => (
+            <li key={j}>{it}</li>
+          ))}
+        </ul>
+      );
+    return <p key={i} className="ct-p">{b.text}</p>;
+  });
+
 export default function Challenges() {
   const [problems, setProblems] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -28,6 +57,8 @@ export default function Challenges() {
   const [solvedIds, setSolvedIds] = useState([]);
   const [totalScore, setTotalScore] = useState(0);
   const [userName, setUserName] = useState("");
+  const [activeTab, setActiveTab] = useState("description");
+  const [showSolution, setShowSolution] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -67,6 +98,8 @@ export default function Challenges() {
         setFlagInput("");
         setMessage("");
         setOpenHints({});
+        setActiveTab("description");
+        setShowSolution(false);
       })
       .catch(console.error);
   };
@@ -115,6 +148,100 @@ export default function Challenges() {
     return hint.split("\n").filter(Boolean);
   };
 
+  const isSolved = selected && solvedIds.includes(selected.id);
+  const content = getChallengeContent(selected);
+
+  // 탭별 읽기 영역 내용
+  const renderTab = () => {
+    if (activeTab === "description") {
+      return (
+        <>
+          <div className="section">
+            <div className="section-label">DESCRIPTION</div>
+            <div className="desc-box">
+              <p>{selected.description}</p>
+              {selected.target && (
+                <p>
+                  타겟: <code>{selected.target}</code>
+                </p>
+              )}
+              <p>
+                Flag 형식: <code>ez{"{"}...{"}"}</code>
+              </p>
+            </div>
+          </div>
+
+          {selected.hint && (
+            <div className="section">
+              <div className="section-label">HINTS</div>
+              {parseHints(selected.hint).map((h, i) => (
+                <div
+                  key={i}
+                  className="hint-box"
+                  onClick={() => toggleHint(i)}
+                >
+                  <span className="hint-arrow">
+                    {openHints[i] ? "▼" : "▶"}
+                  </span>
+                  <span>
+                    {openHints[i] ? h : `힌트 ${i + 1} — 클릭하여 확인`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      );
+    }
+
+    if (activeTab === "theory") {
+      if (!content?.theory)
+        return <div className="no-content">이 문제의 이론 설명은 준비 중입니다.</div>;
+      return (
+        <div className="section">
+          {content.theory.summary && (
+            <div className="ct-summary">{content.theory.summary}</div>
+          )}
+          {renderBlocks(content.theory.blocks)}
+        </div>
+      );
+    }
+
+    if (activeTab === "attack") {
+      if (!content?.attack)
+        return <div className="no-content">이 문제의 공격 풀이는 준비 중입니다.</div>;
+
+      // 스포일러 게이트: 이미 풀었거나, 사용자가 직접 펼쳤을 때만 공개
+      if (!isSolved && !showSolution) {
+        return (
+          <div className="spoiler-gate">
+            <div className="spoiler-icon">🔒</div>
+            <p className="spoiler-title">공격 풀이에는 정답이 포함되어 있어요</p>
+            <p className="spoiler-sub">
+              먼저 직접 시도해 보는 걸 추천해요. 막히면 해설을 확인하세요.
+            </p>
+            <button
+              className="spoiler-btn"
+              onClick={() => setShowSolution(true)}
+            >
+              해설 보기
+            </button>
+          </div>
+        );
+      }
+
+      return <div className="section">{renderBlocks(content.attack.blocks)}</div>;
+    }
+
+    if (activeTab === "defense") {
+      if (!content?.defense)
+        return <div className="no-content">이 문제의 방어 코드는 준비 중입니다.</div>;
+      return <div className="section">{renderBlocks(content.defense.blocks)}</div>;
+    }
+
+    return null;
+  };
+
   return (
     <div className="challenge-container">
       <aside className="sidebar">
@@ -143,23 +270,27 @@ export default function Challenges() {
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category} className="category-group">
             <div className="category-header">
-              <span className={`category-dot ${categoryDotClass[category] || "other"}`} />
+              <span
+                className={`category-dot ${categoryDotClass[category] || "other"}`}
+              />
               <span className="category-name">{category}</span>
             </div>
 
             {items.map((item) => {
               const isActive = selected && selected.id === item.id;
-              const isSolved = solvedIds.includes(item.id);
+              const itemSolved = solvedIds.includes(item.id);
 
               return (
                 <div
                   key={item.id}
-                  className={`problem-item ${isActive ? "active" : ""} ${isSolved ? "solved" : ""}`}
+                  className={`problem-item ${isActive ? "active" : ""} ${
+                    itemSolved ? "solved" : ""
+                  }`}
                   onClick={() => selectProblemById(item.id)}
                 >
                   <div className="problem-item-left">
                     <span className="solved-indicator">
-                      {isSolved ? "✓" : "○"}
+                      {itemSolved ? "✓" : "○"}
                     </span>
                     <span>{item.title}</span>
                   </div>
@@ -183,82 +314,83 @@ export default function Challenges() {
       <main className="content">
         {selected ? (
           <>
-            <h1>{selected.title}</h1>
+            <div className="content-header">
+              <h1>{selected.title}</h1>
 
-            <div className="badge-row">
-              {selected.category && (
-                <span className="badge-category">{selected.category}</span>
-              )}
-              {selected.difficulty && (
-                <span className={`badge-diff ${diffClass(selected.difficulty)}`}>
-                  {selected.difficulty}
-                </span>
-              )}
-              <span className="badge-points-main">
-                🏆 {getPoints(selected.difficulty)}pt
-              </span>
-              {solvedIds.includes(selected.id) && (
-                <span className="badge-solved">SOLVED</span>
-              )}
-            </div>
-
-            <div className="section">
-              <div className="section-label">DESCRIPTION</div>
-              <div className="desc-box">
-                <p>{selected.description}</p>
-                {selected.target && (
-                  <p>타겟: <code>{selected.target}</code></p>
+              <div className="badge-row">
+                {selected.category && (
+                  <span className="badge-category">{selected.category}</span>
                 )}
-                <p>Flag 형식: <code>ez{"{"}...{"}"}</code></p>
+                {selected.difficulty && (
+                  <span className={`badge-diff ${diffClass(selected.difficulty)}`}>
+                    {selected.difficulty}
+                  </span>
+                )}
+                <span className="badge-points-main">
+                  🏆 {getPoints(selected.difficulty)}pt
+                </span>
+                {isSolved && <span className="badge-solved">SOLVED</span>}
+              </div>
+
+              <div className="tabs">
+                {TABS.map((t) => {
+                  const locked =
+                    t.key === "attack" && !isSolved && !showSolution;
+                  return (
+                    <button
+                      key={t.key}
+                      className={`tab ${activeTab === t.key ? "active" : ""}`}
+                      onClick={() => setActiveTab(t.key)}
+                    >
+                      {t.label}
+                      {locked && <span className="lock">🔒</span>}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {selected.hint && (
-              <div className="section">
-                <div className="section-label">HINTS</div>
-                {parseHints(selected.hint).map((h, i) => (
-                  <div
-                    key={i}
-                    className="hint-box"
-                    onClick={() => toggleHint(i)}
-                  >
-                    <span className="hint-arrow">{openHints[i] ? "▼" : "▶"}</span>
-                    <span>{openHints[i] ? h : `힌트 ${i + 1} — 클릭하여 확인`}</span>
+            <div className="work-area">
+              <div className="read-pane">{renderTab()}</div>
+
+              <div className="lab-pane">
+                <div className="lab-frame-wrap">
+                  <div className="section-label">LAB</div>
+                  {selected.dvwa_path ? (
+                    <iframe
+                      src={`http://localhost:3000/dvwa/${selected.dvwa_path.replace(
+                        /^\//,
+                        ""
+                      )}`}
+                      title="DVWA"
+                      className="lab-iframe"
+                    />
+                  ) : (
+                    <div className="lab-empty">실습 환경이 연결되지 않은 문제입니다.</div>
+                  )}
+                </div>
+
+                <div className="submit-area">
+                  <div className="section-label">SUBMIT FLAG</div>
+                  <div className="flag-row">
+                    <input
+                      type="text"
+                      placeholder="ez{...}"
+                      value={flagInput}
+                      onChange={(e) => setFlagInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && submitFlag()}
+                      className="flag-input"
+                    />
+                    <button onClick={submitFlag} className="submit-btn">
+                      제출
+                    </button>
                   </div>
-                ))}
+                  {message && (
+                    <p className={`flag-message ${messageType}`}>{message}</p>
+                  )}
+                </div>
               </div>
-            )}
-
-            <hr className="divider" />
-
-            <div className="section">
-              <div className="section-label">SUBMIT FLAG</div>
-              <div className="flag-row">
-                <input
-                  type="text"
-                  placeholder="ez{...}"
-                  value={flagInput}
-                  onChange={(e) => setFlagInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && submitFlag()}
-                  className="flag-input"
-                />
-                <button onClick={submitFlag} className="submit-btn">제출</button>
-              </div>
-              {message && (
-                <p className={`flag-message ${messageType}`}>{message}</p>
-              )}
             </div>
-
-            {selected.dvwa_path && (
-              <div className="section">
-                <div className="section-label">LAB</div>
-                <iframe
-                  src={`http://localhost:3000/dvwa/${selected.dvwa_path.replace(/^\//, "")}`}
-                  title="DVWA"
-                  className="lab-iframe"
-                />
-              </div>
-            )}
           </>
         ) : (
           <div className="empty-state">
