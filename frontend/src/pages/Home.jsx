@@ -86,9 +86,9 @@ export default function Home() {
         <div className={`home-divider ${revealed ? "revealed" : ""}`} />
 
         <p className={`home-subtitle ${revealed ? "revealed" : ""}`}>
-          웹 보안의 세계에 입장하세요.{" "}
-          <code>SQLi</code> · <code>XSS</code> · <code>CSRF</code>{" "}
-          취약점을 직접 경험해보세요.
+          <span className="hero-en">Enter the Battlefield.</span>
+          <br />
+          숨겨진 FLAG를 찾아내고 당신의 실력을 증명하세요.
         </p>
 
         <div className={`home-btn-row ${revealed ? "revealed" : ""}`}>

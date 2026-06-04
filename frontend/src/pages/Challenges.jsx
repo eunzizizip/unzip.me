@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Challenges.css";
 import { getChallengeContent } from "./challengeContent";
@@ -48,6 +49,7 @@ const renderBlocks = (blocks = []) =>
   });
 
 export default function Challenges() {
+  const navigate = useNavigate();
   const [problems, setProblems] = useState([]);
   const [selected, setSelected] = useState(null);
   const [flagInput, setFlagInput] = useState("");
@@ -246,7 +248,12 @@ export default function Challenges() {
     <div className="challenge-container">
       <aside className="sidebar">
         <div className="sidebar-header">
-          <div className="sidebar-logo">
+          <div
+            className="sidebar-logo"
+            onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
+            title="시작 페이지로"
+          >
             <span className="green">unzip</span>
             <span className="dot">.</span>
             <span className="gray">me</span>

@@ -3,6 +3,7 @@ const cors = require("cors");
 const mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -49,20 +50,42 @@ app.get("/", (req, res) => res.send("서버 실행 중 🔥"));
 // =========================
 // ✅ 회원가입
 // =========================
-app.post("/signup", (req, res) => {
+app.post("/signup", async (req, res) => {
   const { name, username, password } = req.body;
   if (!name || !username || !password) {
     return res.status(400).send({ message: "모든 값을 입력해주세요." });
   }
-  const sql = "INSERT INTO users (name, username, password) VALUES (?, ?, ?)";
-  db.query(sql, [name, username, password], (err) => {
-    if (err) {
-      if (err.code === "ER_DUP_ENTRY") {
-        return res.status(400).send({ message: "이미 사용 중인 아이디입니다." });
+  try {
+    const hashed = await bcrypt.hash(password, 10);
+    const sql = "INSERT INTO users (name, username, password) VALUES (?, ?, ?)";
+    db.query(sql, [name, username, hashed], (err) => {
+      if (err) {
+        if (err.code === "ER_DUP_ENTRY") {
+          return res.status(400).send({ message: "이미 사용 중인 아이디입니다." });
+        }
+        return res.status(500).send({ message: "회원가입 실패 ❌" });
       }
-      return res.status(500).send({ message: "회원가입 실패 ❌" });
+      res.send({ message: "회원가입 성공 🔥" });
+    });
+  } catch {
+    res.status(500).send({ message: "암호화 실패 ❌" });
+  }
+});
+// =========================
+// ✅ 아이디 중복 확인
+// =========================
+app.post("/check-username", (req, res) => {
+  const { username } = req.body;
+  if (!username) {
+    return res.status(400).send({ message: "아이디를 입력해주세요." });
+  }
+  const sql = "SELECT id FROM users WHERE username = ?";
+  db.query(sql, [username], (err, result) => {
+    if (err) return res.status(500).send({ message: "확인 실패 ❌" });
+    if (result.length > 0) {
+      return res.send({ available: false, message: "이미 사용 중인 아이디입니다." });
     }
-    res.send({ message: "회원가입 성공 🔥" });
+    res.send({ available: true, message: "사용 가능한 아이디입니다." });
   });
 });
 
@@ -71,19 +94,23 @@ app.post("/signup", (req, res) => {
 // =========================
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
-  const sql = "SELECT * FROM users WHERE username=? AND password=?";
-  db.query(sql, [username, password], (err, result) => {
+  const sql = "SELECT * FROM users WHERE username=?";
+  db.query(sql, [username], async (err, result) => {
     if (err) return res.status(500).send({ message: "로그인 오류 ❌" });
-    if (result.length > 0) {
-      const user = result[0];
-      const token = jwt.sign(
-        { id: user.id, username: user.username },
-        SECRET,
-        { expiresIn: "1h" }
-      );
-      return res.send({ message: "로그인 성공 🔥", token });
+    if (result.length === 0) {
+      return res.status(401).send({ message: "아이디 또는 비밀번호 틀림 ❌" });
     }
-    return res.status(401).send({ message: "아이디 또는 비밀번호 틀림 ❌" });
+    const user = result[0];
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).send({ message: "아이디 또는 비밀번호 틀림 ❌" });
+    }
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      SECRET,
+      { expiresIn: "1h" }
+    );
+    res.send({ message: "로그인 성공 🔥", token });
   });
 });
 
