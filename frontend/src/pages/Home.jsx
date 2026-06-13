@@ -44,21 +44,14 @@ export default function Home() {
 
       <header className="home-topbar">
         <span className="home-logo">
-          <span className="green">unzip</span>
+          <span className="green">CTF</span>
           <span className="dot">.</span>
-          <span className="gray">me</span>
+          <span className="gray">Challenge</span>
         </span>
 
-        <nav className="home-nav">
-          {token && (
-            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-              <span>{username}님 달려봅시다 🚀</span>
-              <button className="btn-nav" onClick={logout}>
-                로그아웃
-              </button>
-            </div>
-          )}
-        </nav>
+        <div className="home-badge revealed">
+    <span className="badge-dot"></span>SYSTEM ONLINE
+  </div>
       </header>
 
       <main className="home-hero">
@@ -74,21 +67,18 @@ export default function Home() {
           </span>
         </div>
 
-        <div className={`home-badge ${revealed ? "revealed" : ""}`}>
-          <span className="badge-dot" />
-          SYSTEM ONLINE
-        </div>
+        
 
         <h1 className={`home-title ${revealed ? "revealed" : ""}`}>
-          CTF <span className="accent">Challenge</span>
+          unzip . <span className="accent">me !</span>
         </h1>
 
         <div className={`home-divider ${revealed ? "revealed" : ""}`} />
 
         <p className={`home-subtitle ${revealed ? "revealed" : ""}`}>
-          <span className="hero-en">Enter the Battlefield.</span>
+          <span className="hero-en">Enter the Battlefield</span>
           <br />
-          숨겨진 FLAG를 찾아내고 당신의 실력을 증명하세요.
+          숨겨진 FLAG를 찾아내고 당신의 실력을 증명하세요
         </p>
 
         <div className={`home-btn-row ${revealed ? "revealed" : ""}`}>

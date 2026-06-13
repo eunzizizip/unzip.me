@@ -38,6 +38,30 @@
 .home-logo .dot   { color: #5a6680; }
 .home-logo .gray  { color: #c5cede; }
 
+/* ── 우상단 뱃지 (SYSTEM ONLINE) — 로고와 평행 ── */
+.home-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #1D9E75;
+  border: 0.5px solid #1D9E75;
+  padding: 4px 12px;
+  border-radius: 99px;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+}
+.home-badge.revealed { opacity: 1; transform: translateY(0); }
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1D9E75;
+  display: inline-block;
+}
+
 .home-nav { display: flex; gap: 8px; }
 
 .btn-nav {
@@ -85,45 +109,21 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 15px;
-  margin-bottom: 24px;
+  font-size: 16px;
+  margin-bottom: 32px;
 }
 .prompt-user   { color: #1D9E75; font-weight: 500; }
 .prompt-sep    { color: #5a6680; }
 .prompt-cmd    { color: #f0f4ff; }
 .prompt-cursor { color: #1D9E75; transition: opacity 0.1s; }
 
-.home-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #1D9E75;
-  border: 0.5px solid #1D9E75;
-  padding: 4px 12px;
-  border-radius: 99px;
-  margin-bottom: 24px;
-  letter-spacing: 0.1em;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
-}
-.home-badge.revealed { opacity: 1; transform: translateY(0); }
-.badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #1D9E75;
-  display: inline-block;
-}
-
 .home-title {
-  font-size: clamp(38px, 5vw, 58px);
+  font-size: clamp(48px, 7vw, 88px);
   font-weight: 500;
   color: #f0f4ff;
   text-align: center;
-  letter-spacing: -1px;
-  line-height: 1.1;
+  letter-spacing: -1.5px;
+  line-height: 1.05;
   margin: 0;
   opacity: 0;
   transform: translateY(12px);
@@ -135,30 +135,34 @@
 .home-divider {
   height: 2px;
   background: #1D9E75;
-  margin: 16px 0;
+  margin: 24px 0;
   width: 0;
   transition: width 0.6s ease 0.35s;
 }
-.home-divider.revealed { width: 60px; }
+.home-divider.revealed { width: 72px; }
 
 .home-subtitle {
-  font-size: 16px;
+  font-size: 19px;
   color: #c5cede;
   text-align: center;
-  line-height: 1.8;
-  max-width: 460px;
-  margin-bottom: 32px;
+  line-height: 1.9;
+  max-width: 520px;
+  margin-bottom: 40px;
   opacity: 0;
   transition: opacity 0.5s ease 0.45s;
 }
 .home-subtitle.revealed { opacity: 1; }
+
+/* ── 영어 문구: 메인 카피 → 시스템 라벨로 격하 ── */
 .home-subtitle .hero-en {
   display: inline-block;
-  color: #f0f4ff;
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  margin-bottom: 4px;
+  color: #1D9E75;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  padding-left: 2px;
 }
 
 .home-btn-row {
